@@ -1,0 +1,7 @@
+import { BookOpen, ClipboardCheck, Users, WalletCards } from "lucide-react";
+import { DashboardShell } from "@/components/dashboard-shell";
+import { Card } from "@/components/ui/card";
+const modules = [[Users,"Students","Manage learner access and profiles"],[BookOpen,"Courses","Create and organize learning content"],[ClipboardCheck,"Assessments","Review quizzes, tasks, and outcomes"],[WalletCards,"Rewards","Oversee future points and reward activity"]] as const;
+export default function AdminDashboard() {
+  return <DashboardShell admin eyebrow="Admin dashboard" title="Platform overview"><div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-blue-950"><p className="font-extrabold">Foundation preview</p><p className="mt-1 text-sm leading-6 text-blue-800">Administration tools are intentionally placeholders in this phase. No live student, payment, or reward data is connected.</p></div><div className="mt-6 grid gap-4 sm:grid-cols-2">{modules.map(([Icon,title,text])=><Card key={title} className="p-6"><span className="grid h-11 w-11 place-items-center rounded-xl bg-slate-950 text-white"><Icon className="h-5 w-5"/></span><h2 className="mt-5 text-xl font-extrabold">{title}</h2><p className="mt-2 leading-7 text-slate-600">{text}</p><span className="mt-5 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-500">COMING LATER</span></Card>)}</div></DashboardShell>;
+}

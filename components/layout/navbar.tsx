@@ -1,0 +1,6 @@
+import Link from "next/link";
+import { GraduationCap } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+export function Navbar() {
+  return <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl"><nav className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8" aria-label="Main navigation"><Link href="/" className="flex items-center gap-2.5 text-xl font-black tracking-tight text-slate-950"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white"><GraduationCap className="h-6 w-6" /></span>SkillSpring</Link><div className="hidden items-center gap-7 text-sm font-bold text-slate-600 md:flex"><Link className="hover:text-blue-600" href="/#pathway">Courses</Link><Link className="hover:text-blue-600" href="/#how-it-works">How it works</Link><Link className="hover:text-blue-600" href="/student">Student Dashboard</Link><Link className="hover:text-blue-600" href="/admin">Admin</Link></div><ButtonLink href="/student" className="hidden sm:inline-flex">Dashboard</ButtonLink><Link href="/student" className="text-sm font-extrabold text-blue-700 sm:hidden">Dashboard</Link></nav></header>;
+}
