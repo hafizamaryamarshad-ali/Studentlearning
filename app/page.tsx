@@ -35,7 +35,7 @@ export default function Home() {
                 Learn practical skills, prove what you know, and unlock opportunities through challenges, certificates, and rewards.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="#pathway" size="lg">Explore Courses <ArrowRight className="h-5 w-5" /></ButtonLink>
+                <ButtonLink href="/courses" size="lg">Explore Courses <ArrowRight className="h-5 w-5" /></ButtonLink>
                 <ButtonLink href="#how-it-works" variant="secondary" size="lg">How It Works</ButtonLink>
               </div>
               <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-slate-600">

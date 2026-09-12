@@ -1,7 +1,33 @@
-import { Award, BookOpen, Flame, Target } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, CheckCircle2, Compass, PlayCircle, UserRound } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Card } from "@/components/ui/card";
-const stats = [[BookOpen,"2","Active courses"],[Target,"5","Tasks complete"],[Flame,"7 days","Learning streak"],[Award,"1,240","Points earned"]] as const;
-export default function StudentDashboard() {
-  return <DashboardShell eyebrow="Student dashboard" title="Welcome back, learner"><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{stats.map(([Icon,value,label])=><Card key={label} className="p-5"><Icon className="h-5 w-5 text-blue-600"/><p className="mt-5 text-3xl font-black">{value}</p><p className="mt-1 text-sm font-semibold text-slate-500">{label}</p></Card>)}</div><div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_.7fr]"><Card className="p-6"><div className="flex items-center justify-between"><div><p className="text-sm font-bold text-blue-600">CONTINUE LEARNING</p><h2 className="mt-2 text-xl font-extrabold">Digital Skills Essentials</h2></div><span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-bold text-blue-700">68%</span></div><div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-[68%] rounded-full bg-blue-600"/></div><p className="mt-5 text-sm text-slate-500">Next: Creating clear and effective presentations</p></Card><Card className="border-dashed p-6"><p className="text-sm font-bold text-slate-500">UP NEXT</p><h2 className="mt-2 text-xl font-extrabold">Your dashboard will grow with you.</h2><p className="mt-3 leading-7 text-slate-600">Upcoming phases will add courses, quizzes, challenges, certificates, referrals, and wallet tools.</p></Card></div></DashboardShell>;
+import { requireStudent } from "@/lib/auth/session";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { Course, Enrollment } from "@/lib/supabase/types";
+
+export const dynamic = "force-dynamic";
+
+export default async function StudentDashboard() {
+  const { profile } = await requireStudent();
+  const firstName = profile.full_name.trim().split(/\s+/)[0];
+  const supabase = await createServerSupabaseClient();
+  const { data: enrollments, error } = await supabase.from("enrollments").select("*").eq("student_id", profile.id).in("status", ["active", "completed"]).order("enrolled_at", { ascending: false });
+  const courseIds = (enrollments ?? []).map((enrollment) => enrollment.course_id);
+  const courses: Course[] = courseIds.length ? (await supabase.from("courses").select("*").in("id", courseIds)).data ?? [] : [];
+  const joined = (enrollments ?? []).flatMap((enrollment) => { const course = courses.find((item) => item.id === enrollment.course_id); return course ? [{ enrollment, course }] : []; });
+  const active = joined.filter(({ enrollment }) => enrollment.status !== "completed");
+  const completed = joined.filter(({ enrollment }) => enrollment.status === "completed");
+
+  return <DashboardShell eyebrow="Student dashboard" title={`Welcome back, ${firstName}`} profile={profile}>
+    {error ? <Card className="border-red-200 bg-red-50 p-6 text-red-900">Your enrollments could not be loaded. Please try again.</Card> : <>
+      <div className="grid gap-4 sm:grid-cols-3"><Stat label="In progress" value={active.length} icon={PlayCircle} /><Stat label="Completed" value={completed.length} icon={CheckCircle2} /><Stat label="Total courses" value={joined.length} icon={BookOpen} /></div>
+      <section className="mt-8"><div className="flex items-end justify-between gap-4"><div><h2 className="text-2xl font-black">Continue learning</h2><p className="mt-1 text-slate-600">Your active enrollments and actual lesson progress.</p></div><Link href="/courses" className="font-extrabold text-blue-700 hover:underline">Browse courses</Link></div>{active.length ? <div className="mt-5 grid gap-5 lg:grid-cols-2">{active.map(({ enrollment, course }) => <EnrollmentCard key={enrollment.id} enrollment={enrollment} course={course} />)}</div> : <Card className="mt-5 p-9 text-center"><Compass className="mx-auto h-10 w-10 text-slate-400" /><h3 className="mt-4 text-xl font-extrabold">No active courses</h3><p className="mt-2 text-slate-600">Enroll in a free published course to begin learning.</p><Link href="/courses" className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-blue-600 px-5 font-extrabold text-white hover:bg-blue-700">Explore courses</Link></Card>}</section>
+      {completed.length > 0 && <section className="mt-9"><h2 className="text-2xl font-black">Completed courses</h2><div className="mt-5 grid gap-5 lg:grid-cols-2">{completed.map(({ enrollment, course }) => <EnrollmentCard key={enrollment.id} enrollment={enrollment} course={course} />)}</div></section>}
+    </>}
+    <Card className="mt-8 flex flex-col gap-5 p-6 sm:flex-row sm:items-center"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-teal-100 text-teal-700"><UserRound className="h-6 w-6" /></span><div className="flex-1"><p className="text-sm font-bold text-slate-500">SIGNED IN AS</p><p className="mt-1 font-extrabold">{profile.full_name} · {profile.email}</p></div><Link href="/profile" className="font-extrabold text-blue-700 hover:underline">View profile</Link></Card>
+  </DashboardShell>;
 }
+
+function Stat({ label, value, icon: Icon }: { label: string; value: number; icon: typeof BookOpen }) { return <Card className="p-5"><Icon className="h-5 w-5 text-blue-600" /><p className="mt-3 text-3xl font-black">{value}</p><p className="text-sm font-bold text-slate-500">{label}</p></Card>; }
+function EnrollmentCard({ enrollment, course }: { enrollment: Enrollment; course: Course }) { const progress = Math.max(0, Math.min(100, enrollment.progress_percentage)); return <Card className="p-6"><div className="flex items-start justify-between gap-4"><h3 className="text-xl font-extrabold">{course.title}</h3><span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-extrabold text-blue-700">{progress}%</span></div><p className="mt-2 line-clamp-2 text-slate-600">{course.short_description}</p><div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-200" aria-label={`${progress}% complete`}><div className="h-full rounded-full bg-blue-600" style={{ width: `${progress}%` }} /></div><Link href={`/courses/${course.slug}`} className="mt-5 inline-flex items-center gap-2 font-extrabold text-blue-700 hover:underline">{enrollment.status === "completed" ? "Review course" : "Continue course"}<PlayCircle className="h-4 w-4" /></Link></Card>; }

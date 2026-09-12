@@ -21,6 +21,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
 a { text-decoration: none; }
 .hero-grid { background-color: #f8fafc; background-image: linear-gradient(#dbeafe80 1px, transparent 1px), linear-gradient(90deg, #dbeafe80 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, black 0%, transparent 90%); }
+.auth-grid { background-image: radial-gradient(circle at 20% 20%, #2563eb 0, transparent 28%), radial-gradient(circle at 80% 70%, #0d9488 0, transparent 30%), linear-gradient(#33415580 1px, transparent 1px), linear-gradient(90deg, #33415580 1px, transparent 1px); background-size: auto, auto, 36px 36px, 36px 36px; }
 .eyebrow { font-size: .8rem; font-weight: 800; letter-spacing: .18em; }
 .section-title { margin-top: .75rem; font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 900; line-height: 1.05; letter-spacing: -.04em; }
 .section-copy { margin-top: 1rem; font-size: 1.125rem; line-height: 1.75rem; }

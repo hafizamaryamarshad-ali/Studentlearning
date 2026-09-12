@@ -1,0 +1,3 @@
+"use client";
+import { AlertCircle } from "lucide-react";
+export default function CoursesError({ reset }: { error: Error; reset: () => void }) { return <main className="grid min-h-screen place-items-center bg-slate-50 p-6"><div className="max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center"><AlertCircle className="mx-auto h-9 w-9 text-red-600" /><h1 className="mt-5 text-2xl font-black">Courses could not be loaded.</h1><p className="mt-3 text-slate-600">Please try again. Your account and progress are safe.</p><button onClick={reset} className="mt-6 rounded-xl bg-blue-600 px-5 py-3 font-extrabold text-white">Try again</button></div></main>; }

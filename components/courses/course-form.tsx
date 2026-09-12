@@ -1,0 +1,14 @@
+import { Save } from "lucide-react";
+import type { Course, CourseStatus } from "@/lib/supabase/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export function CourseForm({ action, course }: { action: (data: FormData) => void | Promise<void>; course?: Course }) {
+  const status: CourseStatus = course?.status ?? "draft";
+  return <form action={action} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">{course && <input type="hidden" name="id" value={course.id} />}<div className="grid gap-5 sm:grid-cols-2"><Field label="Title" name="title" defaultValue={course?.title} required /><Field label="Slug" name="slug" defaultValue={course?.slug} required placeholder="digital-skills-essentials" /></div><div className="space-y-2"><Label htmlFor="short_description">Short description</Label><Input id="short_description" name="short_description" defaultValue={course?.short_description} maxLength={300} required className="h-12 rounded-xl" /></div><div className="space-y-2"><Label htmlFor="description">Description</Label><textarea id="description" name="description" defaultValue={course?.description} required rows={5} className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></div><div className="grid gap-5 sm:grid-cols-3"><Field label="Thumbnail URL" name="thumbnail_url" type="url" defaultValue={course?.thumbnail_url ?? ""} /><Field label="Price (USD)" name="price" type="number" min="0" step="0.01" defaultValue={course?.price ?? 0} required /><div className="space-y-2"><Label htmlFor="status">Status</Label><select id="status" name="status" defaultValue={status} className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">{["draft","published","archived"].map((item)=><option key={item} value={item}>{item[0].toUpperCase()+item.slice(1)}</option>)}</select></div></div><Button type="submit" size="lg" className="h-12 rounded-xl bg-blue-600 px-6 font-extrabold hover:bg-blue-700"><Save className="h-5 w-5" />{course ? "Save course" : "Create course"}</Button></form>;
+}
+
+function Field({ label, name, ...props }: { label: string; name: string } & React.ComponentProps<typeof Input>) {
+  return <div className="space-y-2"><Label htmlFor={name}>{label}</Label><Input id={name} name={name} className="h-12 rounded-xl" {...props} /></div>;
+}
