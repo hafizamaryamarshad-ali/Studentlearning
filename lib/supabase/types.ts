@@ -45,12 +45,15 @@ export interface Payment {
 }
 export interface Quiz {
   id: Id; lesson_id: Id; title: string; description: string | null; passing_score: number; created_at: Timestamp;
+  is_published: boolean; updated_at: Timestamp;
 }
 export interface QuizQuestion {
   id: Id; quiz_id: Id; question: string; options: Json; correct_answer: Json; points: number; sort_order: number;
 }
 export interface QuizAttempt {
-  id: Id; student_id: Id; quiz_id: Id; score: number; passed: boolean; attempted_at: Timestamp;
+  id: Id; student_id: Id; quiz_id: Id; score: number; max_score: number; percentage: number;
+  passed: boolean; correct_answers: number; total_questions: number; answers: Json;
+  result_summary: Json; submission_token: Id; attempted_at: Timestamp;
 }
 export interface Task {
   id: Id; course_id: Id; title: string; description: string; submission_type: string;
@@ -126,7 +129,7 @@ export interface Database {
       lessons: Table<Lesson, Insertable<Lesson, "id" | "description" | "content" | "video_url" | "sort_order" | "created_at" | "updated_at">>;
       enrollments: Table<Enrollment, Insertable<Enrollment, "id" | "status" | "progress_percentage" | "enrolled_at" | "completed_at">>;
       payments: Table<Payment, Insertable<Payment, "id" | "currency" | "status" | "provider" | "provider_reference" | "created_at" | "paid_at">>;
-      quizzes: Table<Quiz, Insertable<Quiz, "id" | "description" | "passing_score" | "created_at">>;
+      quizzes: Table<Quiz, Insertable<Quiz, "id" | "description" | "passing_score" | "is_published" | "created_at" | "updated_at">>;
       quiz_questions: Table<QuizQuestion, Insertable<QuizQuestion, "id" | "points" | "sort_order">>;
       quiz_attempts: Table<QuizAttempt, Insertable<QuizAttempt, "id" | "passed" | "attempted_at">>;
       tasks: Table<Task, Insertable<Task, "id" | "points" | "deadline" | "created_at">>;
@@ -150,9 +153,17 @@ export interface Database {
       };
     };
     Functions: {
+      get_quiz_questions: {
+        Args: { p_quiz_id: string };
+        Returns: Array<{ question_id: string; question: string; options: Json; points: number; sort_order: number }>;
+      };
       is_admin: {
         Args: never;
         Returns: boolean;
+      };
+      submit_quiz_attempt: {
+        Args: { p_quiz_id: string; p_answers: Json; p_submission_token: string };
+        Returns: Array<{ attempt_id: string; score: number; max_score: number; percentage: number; passed: boolean; correct_answers: number; total_questions: number }>;
       };
     };
     Enums: {

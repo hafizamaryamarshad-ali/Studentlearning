@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-assign-module-variable */
 import Link from "next/link";
-import { BookOpen, CheckCircle2, Compass, PlayCircle, UserRound } from "lucide-react";
+import { BookOpen, CheckCircle2, ClipboardCheck, Compass, PlayCircle, UserRound } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Card } from "@/components/ui/card";
 import { requireStudent } from "@/lib/auth/session";
@@ -18,12 +19,20 @@ export default async function StudentDashboard() {
   const joined = (enrollments ?? []).flatMap((enrollment) => { const course = courses.find((item) => item.id === enrollment.course_id); return course ? [{ enrollment, course }] : []; });
   const active = joined.filter(({ enrollment }) => enrollment.status !== "completed");
   const completed = joined.filter(({ enrollment }) => enrollment.status === "completed");
+  const modules = courseIds.length ? (await supabase.from("course_modules").select("*").in("course_id", courseIds)).data ?? [] : [];
+  const moduleIds = modules.map((module) => module.id);
+  const lessons = moduleIds.length ? (await supabase.from("lessons").select("*").in("module_id", moduleIds)).data ?? [] : [];
+  const lessonIds = lessons.map((lesson) => lesson.id);
+  const quizzes = lessonIds.length ? (await supabase.from("quizzes").select("*").in("lesson_id", lessonIds).eq("is_published", true)).data ?? [] : [];
+  const quizIds = quizzes.map((quiz) => quiz.id);
+  const attempts = quizIds.length ? (await supabase.from("quiz_attempts").select("*").eq("student_id", profile.id).in("quiz_id", quizIds).order("attempted_at", { ascending: false })).data ?? [] : [];
 
   return <DashboardShell eyebrow="Student dashboard" title={`Welcome back, ${firstName}`} profile={profile}>
     {error ? <Card className="border-red-200 bg-red-50 p-6 text-red-900">Your enrollments could not be loaded. Please try again.</Card> : <>
       <div className="grid gap-4 sm:grid-cols-3"><Stat label="In progress" value={active.length} icon={PlayCircle} /><Stat label="Completed" value={completed.length} icon={CheckCircle2} /><Stat label="Total courses" value={joined.length} icon={BookOpen} /></div>
       <section className="mt-8"><div className="flex items-end justify-between gap-4"><div><h2 className="text-2xl font-black">Continue learning</h2><p className="mt-1 text-slate-600">Your active enrollments and actual lesson progress.</p></div><Link href="/courses" className="font-extrabold text-blue-700 hover:underline">Browse courses</Link></div>{active.length ? <div className="mt-5 grid gap-5 lg:grid-cols-2">{active.map(({ enrollment, course }) => <EnrollmentCard key={enrollment.id} enrollment={enrollment} course={course} />)}</div> : <Card className="mt-5 p-9 text-center"><Compass className="mx-auto h-10 w-10 text-slate-400" /><h3 className="mt-4 text-xl font-extrabold">No active courses</h3><p className="mt-2 text-slate-600">Enroll in a free published course to begin learning.</p><Link href="/courses" className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-blue-600 px-5 font-extrabold text-white hover:bg-blue-700">Explore courses</Link></Card>}</section>
       {completed.length > 0 && <section className="mt-9"><h2 className="text-2xl font-black">Completed courses</h2><div className="mt-5 grid gap-5 lg:grid-cols-2">{completed.map(({ enrollment, course }) => <EnrollmentCard key={enrollment.id} enrollment={enrollment} course={course} />)}</div></section>}
+      {quizzes.length > 0 && <section className="mt-9"><div className="flex items-center gap-3"><ClipboardCheck className="h-6 w-6 text-blue-600" /><div><h2 className="text-2xl font-black">Assessments</h2><p className="text-slate-600">Published quizzes from your enrolled courses.</p></div></div><div className="mt-5 grid gap-4 lg:grid-cols-2">{quizzes.map((quiz) => { const lesson = lessons.find((item) => item.id === quiz.lesson_id); const module = lesson ? modules.find((item) => item.id === lesson.module_id) : undefined; const course = module ? courses.find((item) => item.id === module.course_id) : undefined; const latest = attempts.find((attempt) => attempt.quiz_id === quiz.id); if (!lesson || !course) return null; return <Card key={quiz.id} className="p-6"><div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-lg font-extrabold">{quiz.title}</h3><p className="mt-1 text-sm text-slate-600">{course.title} · {lesson.title}</p></div><span className={`rounded-full px-3 py-1 text-xs font-extrabold ${latest?.passed ? "bg-emerald-100 text-emerald-800" : latest ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}`}>{latest?.passed ? "PASSED" : latest ? "TRY AGAIN" : "AVAILABLE"}</span></div><Link href={`/courses/${course.slug}/lessons/${lesson.id}/quizzes/${quiz.id}`} className="mt-5 inline-flex font-extrabold text-blue-700 hover:underline">{latest ? `Latest score: ${latest.percentage}%` : "Start quiz"} →</Link></Card>; })}</div></section>}
     </>}
     <Card className="mt-8 flex flex-col gap-5 p-6 sm:flex-row sm:items-center"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-teal-100 text-teal-700"><UserRound className="h-6 w-6" /></span><div className="flex-1"><p className="text-sm font-bold text-slate-500">SIGNED IN AS</p><p className="mt-1 font-extrabold">{profile.full_name} · {profile.email}</p></div><Link href="/profile" className="font-extrabold text-blue-700 hover:underline">View profile</Link></Card>
   </DashboardShell>;
