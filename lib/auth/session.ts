@@ -42,7 +42,7 @@ export const getCurrentAuth = cache(async (): Promise<AuthState> => {
   }
 });
 
-export async function requireStudent(returnTo = "/student") {
+async function requireProfile(returnTo: string) {
   const auth = await getCurrentAuth();
   if (!auth.configured) redirect("/login?reason=configuration");
   if (!auth.user) redirect(`/login?reason=session&next=${encodeURIComponent(returnTo)}`);
@@ -50,8 +50,14 @@ export async function requireStudent(returnTo = "/student") {
   return { user: auth.user, profile: auth.profile };
 }
 
+export async function requireStudent(returnTo = "/student") {
+  const auth = await requireProfile(returnTo);
+  if (auth.profile.role !== "student") redirect("/admin");
+  return auth;
+}
+
 export async function requireAdmin(returnTo = "/admin") {
-  const auth = await requireStudent(returnTo);
+  const auth = await requireProfile(returnTo);
   if (auth.profile.role !== "admin") redirect("/unauthorized");
   return auth;
 }

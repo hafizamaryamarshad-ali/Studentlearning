@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "SkillSpring", template: "%s | SkillSpring" },
-  description: "Learn practical skills, prove what you know, and unlock opportunities through challenges, certificates, and rewards.",
+  description: "Build practical skills through structured courses, guided lessons, and measurable progress.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 

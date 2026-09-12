@@ -47,7 +47,7 @@ export function SignupForm() {
         },
       });
       if (signUpError) {
-        setError(getFriendlyAuthError(signUpError.message));
+        setError(getFriendlyAuthError(signUpError.message, signUpError.code));
         return;
       }
       if (data.user?.identities?.length === 0) {

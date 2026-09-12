@@ -1,5 +1,7 @@
-export function getFriendlyAuthError(message?: string) {
+export function getFriendlyAuthError(message?: string, code?: string) {
   const normalized = message?.toLowerCase() ?? "";
+  if (code === "over_email_send_rate_limit") return "Confirmation email limit reached. Please wait before trying again.";
+  if (code === "over_request_rate_limit") return "Too many authentication requests. Please wait a few minutes and try again.";
   if (normalized.includes("invalid login credentials")) return "The email or password is incorrect.";
   if (normalized.includes("email not confirmed")) return "Please confirm your email before signing in.";
   if (normalized.includes("already registered") || normalized.includes("already been registered")) {

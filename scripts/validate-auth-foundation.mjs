@@ -3,11 +3,13 @@ import { resolve } from "node:path";
 
 const read = (path) => readFileSync(resolve(path), "utf8");
 const signup = read("components/auth/signup-form.tsx");
+const login = read("components/auth/login-form.tsx");
 const logout = read("components/auth/logout-button.tsx");
 const session = read("lib/auth/session.ts");
 const server = read("lib/supabase/server.ts");
 const adminPage = read("app/admin/page.tsx");
 const studentPage = read("app/student/page.tsx");
+const studentsPage = read("app/admin/students/page.tsx");
 const authMigration = read("supabase/migrations/202609120002_auth_profile_trigger.sql");
 const authSources = [signup, logout, session, server, adminPage, studentPage].join("\n");
 
@@ -19,7 +21,10 @@ const assertions = [
   [!authMigration.includes("raw_user_meta_data ->> 'role'"), "Database trigger must not trust role metadata"],
   [studentPage.includes("requireStudent()"), "Student dashboard lacks server protection"],
   [adminPage.includes("requireAdmin()"), "Admin dashboard lacks server role protection"],
+  [session.includes('auth.profile.role !== "student"'), "Student authorization check is missing"],
   [session.includes('auth.profile.role !== "admin"'), "Admin authorization check is missing"],
+  [login.includes('profile.role === "admin"'), "Login does not route administrators to their dashboard"],
+  [studentsPage.includes('requireAdmin("/admin/students")'), "Student administration lacks server role protection"],
   [server.includes("cookieStore.getAll()"), "Server cookie session handling is missing"],
   [logout.includes("supabase.auth.signOut"), "Logout is missing"],
   [!authSources.includes("localStorage"), "Authentication must not use localStorage directly"],

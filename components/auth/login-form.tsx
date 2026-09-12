@@ -32,15 +32,23 @@ export function LoginForm({ nextPath = "/student", notice }: { nextPath?: string
     setLoading(true);
     try {
       const supabase = getSupabaseBrowserClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password,
       });
       if (signInError) {
-        setError(getFriendlyAuthError(signInError.message));
+        setError(getFriendlyAuthError(signInError.message, signInError.code));
         return;
       }
-      router.replace(safeNextPath(nextPath));
+      const { data: profile } = data.user
+        ? await supabase.from("profiles").select("role").eq("id", data.user.id).maybeSingle()
+        : { data: null };
+      const destination = !profile
+        ? "/auth/profile-missing"
+        : profile.role === "admin"
+          ? "/admin"
+          : safeNextPath(nextPath);
+      router.replace(destination);
       router.refresh();
     } catch {
       setError("Authentication is not configured yet. Add the Supabase project URL and anon key, then try again.");
