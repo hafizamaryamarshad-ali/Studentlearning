@@ -61,8 +61,13 @@ export function SignupForm() {
       }
       setSuccess("Check your email to confirm your account, then return here to sign in.");
       setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
-    } catch {
-      setError("Authentication is not configured yet. Add the Supabase project URL and anon key, then try again.");
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "";
+      setError(
+        message === "SUPABASE_NOT_CONFIGURED"
+          ? "Authentication is not configured yet. Add the Supabase project URL and public key, then try again."
+          : getFriendlyAuthError(message),
+      );
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,4 @@
+project_id = "StudentLearningPlatform"
+
+[auth.email]
+enable_confirmations = false
