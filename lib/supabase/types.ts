@@ -26,7 +26,7 @@ export interface Profile {
 }
 export interface Course {
   id: Id; title: string; slug: string; description: string; short_description: string;
-  thumbnail_url: string | null; price: number; status: CourseStatus; created_at: Timestamp; updated_at: Timestamp;
+  thumbnail_url: string | null; price: number; currency: string; status: CourseStatus; created_at: Timestamp; updated_at: Timestamp;
 }
 export interface CourseModule {
   id: Id; course_id: Id; title: string; description: string | null; sort_order: number; created_at: Timestamp;
@@ -42,6 +42,12 @@ export interface Enrollment {
 export interface Payment {
   id: Id; student_id: Id; course_id: Id; amount: number; currency: string; status: PaymentStatus;
   provider: string | null; provider_reference: string | null; created_at: Timestamp; paid_at: Timestamp | null;
+  proof_path: string | null; student_note: string | null; admin_message: string | null;
+  reviewer_id: Id | null; reviewed_at: Timestamp | null; updated_at: Timestamp; submission_token: Id;
+}
+export interface PaymentSettings {
+  id: boolean; payment_method: string; account_title: string; account_number: string;
+  instructions: string | null; is_active: boolean; updated_by: Id | null; updated_at: Timestamp;
 }
 export interface Quiz {
   id: Id; lesson_id: Id; title: string; description: string | null; passing_score: number; created_at: Timestamp;
@@ -98,7 +104,9 @@ export interface WithdrawalRequest {
 }
 export interface Certificate {
   id: Id; student_id: Id; course_id: Id; certificate_number: string; certificate_type: string;
-  issued_at: Timestamp; verification_token: string; status: CertificateStatus;
+  issued_at: Timestamp; verification_token: string; status: CertificateStatus; quiz_id: Id | null;
+  student_name: string | null; quiz_title: string | null; score: number | null;
+  max_score: number | null; percentage: number | null;
 }
 export interface Notification {
   id: Id; student_id: Id; title: string; message: string; type: string;
@@ -130,7 +138,8 @@ export interface Database {
       course_modules: Table<CourseModule, Insertable<CourseModule, "id" | "description" | "sort_order" | "created_at">>;
       lessons: Table<Lesson, Insertable<Lesson, "id" | "description" | "content" | "video_url" | "sort_order" | "created_at" | "updated_at">>;
       enrollments: Table<Enrollment, Insertable<Enrollment, "id" | "status" | "progress_percentage" | "enrolled_at" | "completed_at">>;
-      payments: Table<Payment, Insertable<Payment, "id" | "currency" | "status" | "provider" | "provider_reference" | "created_at" | "paid_at">>;
+      payments: Table<Payment, Insertable<Payment, "id" | "currency" | "status" | "provider" | "provider_reference" | "created_at" | "paid_at" | "proof_path" | "student_note" | "admin_message" | "reviewer_id" | "reviewed_at" | "updated_at" | "submission_token">>;
+      payment_settings: Table<PaymentSettings, Insertable<PaymentSettings, "id" | "instructions" | "is_active" | "updated_by" | "updated_at">>;
       quizzes: Table<Quiz, Insertable<Quiz, "id" | "description" | "passing_score" | "is_published" | "created_at" | "updated_at">>;
       quiz_questions: Table<QuizQuestion, Insertable<QuizQuestion, "id" | "points" | "sort_order">>;
       quiz_attempts: Table<QuizAttempt, Insertable<QuizAttempt, "id" | "passed" | "attempted_at">>;
@@ -163,6 +172,10 @@ export interface Database {
         Args: never;
         Returns: boolean;
       };
+      review_course_payment: {
+        Args: { p_payment_id: string; p_decision: "approve" | "reject"; p_admin_message: string };
+        Returns: Array<{ payment_id: string; payment_status: PaymentStatus }>;
+      };
       review_task_submission: {
         Args: { p_submission_id: string; p_status: SubmissionStatus; p_awarded_points: number; p_feedback: string };
         Returns: Array<{ submission_id: string; submission_status: SubmissionStatus; awarded_points: number }>;
@@ -174,6 +187,14 @@ export interface Database {
       submit_quiz_attempt: {
         Args: { p_quiz_id: string; p_answers: Json; p_submission_token: string };
         Returns: Array<{ attempt_id: string; score: number; max_score: number; percentage: number; passed: boolean; correct_answers: number; total_questions: number }>;
+      };
+      submit_course_payment: {
+        Args: { p_course_id: string; p_proof_path: string; p_student_note: string; p_submission_token: string };
+        Returns: Array<{ payment_id: string; payment_status: PaymentStatus }>;
+      };
+      verify_certificate: {
+        Args: { p_token: string };
+        Returns: Array<{ certificate_number: string; student_name: string; course_title: string; quiz_title: string; score: number; max_score: number; percentage: number; issued_at: string; certificate_status: CertificateStatus }>;
       };
     };
     Enums: {

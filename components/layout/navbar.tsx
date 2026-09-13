@@ -43,21 +43,25 @@ export async function Navbar() {
             <div className="hidden items-center gap-6 text-sm font-bold text-slate-600 md:flex">
               <Link className="hover:text-blue-600" href="/admin">Dashboard</Link>
               <Link className="hover:text-blue-600" href="/admin/courses">Courses</Link>
+              <Link className="hover:text-blue-600" href="/admin/quizzes">Quizzes</Link>
+              <Link className="hover:text-blue-600" href="/admin/payments">Payments</Link>
               <Link className="hover:text-blue-600" href="/admin/students">Students</Link>
-              {["Challenges", "Payments", "Withdrawals"].map((item) => <span key={item} className={placeholderClass} title="Coming later">{item}</span>)}
+              {["Challenges", "Withdrawals"].map((item) => <span key={item} className={placeholderClass} title="Coming later">{item}</span>)}
             </div>
             <div className="hidden md:block"><LogoutButton compact /></div>
-            <MobileMenu signedIn links={[{ href: "/admin", label: "Dashboard" }, { href: "/admin/courses", label: "Courses" }, { href: "/admin/students", label: "Students" }]} />
+            <MobileMenu signedIn links={[{ href: "/admin", label: "Dashboard" }, { href: "/admin/courses", label: "Courses" }, { href: "/admin/quizzes", label: "Quizzes" }, { href: "/admin/payments", label: "Payments" }, { href: "/admin/students", label: "Students" }]} />
           </>
         ) : (
           <>
             <div className="hidden items-center gap-7 text-sm font-bold text-slate-600 md:flex">
               <Link className="hover:text-blue-600" href="/student">Dashboard</Link>
               <Link className="hover:text-blue-600" href="/courses">Courses</Link>
+              <Link className="hover:text-blue-600" href="/quizzes">Quizzes</Link>
+              <Link className="hover:text-blue-600" href="/certificates">Certificates</Link>
               <Link className="hover:text-blue-600" href="/profile">Profile</Link>
             </div>
             <div className="hidden md:block"><LogoutButton compact /></div>
-            <MobileMenu signedIn links={[{ href: "/student", label: "Dashboard" }, { href: "/courses", label: "Courses" }, { href: "/profile", label: "Profile" }]} />
+            <MobileMenu signedIn links={[{ href: "/student", label: "Dashboard" }, { href: "/courses", label: "Courses" }, { href: "/quizzes", label: "Quizzes" }, { href: "/student/purchases", label: "Purchases" }, { href: "/certificates", label: "Certificates" }, { href: "/profile", label: "Profile" }]} />
           </>
         )}
       </nav>

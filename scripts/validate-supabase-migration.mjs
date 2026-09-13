@@ -14,7 +14,7 @@ const expectedTables = [
   "task_submissions", "points", "challenges", "challenge_participants",
   "rewards", "referrals", "wallets", "wallet_transactions",
   "withdrawal_requests", "certificates", "notifications",
-  "lesson_progress",
+  "lesson_progress", "payment_settings",
 ];
 
 const assertions = [

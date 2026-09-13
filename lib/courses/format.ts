@@ -1,9 +1,9 @@
 import type { CourseOutline } from "@/lib/supabase/types";
 
-export function formatCoursePrice(price: number) {
+export function formatCoursePrice(price: number, currency = "PKR") {
   return price === 0
     ? "Free"
-    : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(price);
+    : new Intl.NumberFormat("en-PK", { style: "currency", currency, maximumFractionDigits: 0 }).format(price);
 }
 
 export type CourseModuleOutline = {

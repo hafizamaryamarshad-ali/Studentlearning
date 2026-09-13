@@ -17,10 +17,11 @@ function courseInput(data: FormData) {
   const description = text(data, "description");
   const thumbnailUrl = text(data, "thumbnail_url");
   const price = Number(text(data, "price"));
+  const currency = text(data, "currency").toUpperCase();
   const status = text(data, "status") as CourseStatus;
   if (!title || !slug || !shortDescription || !description) return null;
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !Number.isFinite(price) || price < 0 || !statuses.includes(status)) return null;
-  return { title, slug, short_description: shortDescription, description, thumbnail_url: thumbnailUrl || null, price, status };
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !Number.isFinite(price) || price < 0 || !["PKR", "USD"].includes(currency) || !statuses.includes(status)) return null;
+  return { title, slug, short_description: shortDescription, description, thumbnail_url: thumbnailUrl || null, price, currency, status };
 }
 
 export async function createCourse(data: FormData) {
