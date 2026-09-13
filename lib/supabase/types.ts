@@ -8,7 +8,7 @@ export type UserRole = "student" | "admin";
 export type CourseStatus = "draft" | "published" | "archived";
 export type EnrollmentStatus = "pending" | "active" | "completed" | "cancelled";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
-export type SubmissionStatus = "submitted" | "under_review" | "approved" | "rejected";
+export type SubmissionStatus = "submitted" | "under_review" | "needs_revision" | "approved" | "rejected";
 export type ReferralStatus = "pending" | "qualified" | "rejected";
 export type WithdrawalStatus = "pending" | "approved" | "rejected" | "paid";
 export type ChallengeStatus = "draft" | "upcoming" | "active" | "completed" | "archived";
@@ -57,12 +57,14 @@ export interface QuizAttempt {
 }
 export interface Task {
   id: Id; course_id: Id; title: string; description: string; submission_type: string;
-  points: number; deadline: Timestamp | null; created_at: Timestamp;
+  points: number; deadline: Timestamp | null; module_id: Id | null; lesson_id: Id | null;
+  is_published: boolean; resubmission_allowed: boolean; created_at: Timestamp; updated_at: Timestamp;
 }
 export interface TaskSubmission {
   id: Id; task_id: Id; student_id: Id; submission_text: string | null; submission_url: string | null;
   file_url: string | null; status: SubmissionStatus; awarded_points: number; feedback: string | null;
-  submitted_at: Timestamp; reviewed_at: Timestamp | null;
+  submitted_at: Timestamp; reviewed_at: Timestamp | null; reviewer_id: Id | null;
+  submission_token: Id; updated_at: Timestamp;
 }
 export interface PointEntry {
   id: Id; student_id: Id; points: number; source: string; reference_id: Id | null; created_at: Timestamp;
@@ -132,8 +134,8 @@ export interface Database {
       quizzes: Table<Quiz, Insertable<Quiz, "id" | "description" | "passing_score" | "is_published" | "created_at" | "updated_at">>;
       quiz_questions: Table<QuizQuestion, Insertable<QuizQuestion, "id" | "points" | "sort_order">>;
       quiz_attempts: Table<QuizAttempt, Insertable<QuizAttempt, "id" | "passed" | "attempted_at">>;
-      tasks: Table<Task, Insertable<Task, "id" | "points" | "deadline" | "created_at">>;
-      task_submissions: Table<TaskSubmission, Insertable<TaskSubmission, "id" | "submission_text" | "submission_url" | "file_url" | "status" | "awarded_points" | "feedback" | "submitted_at" | "reviewed_at">>;
+      tasks: Table<Task, Insertable<Task, "id" | "points" | "deadline" | "module_id" | "lesson_id" | "is_published" | "resubmission_allowed" | "created_at" | "updated_at">>;
+      task_submissions: Table<TaskSubmission, Insertable<TaskSubmission, "id" | "submission_text" | "submission_url" | "file_url" | "status" | "awarded_points" | "feedback" | "submitted_at" | "reviewed_at" | "reviewer_id" | "submission_token" | "updated_at">>;
       points: Table<PointEntry, Insertable<PointEntry, "id" | "reference_id" | "created_at">>;
       challenges: Table<Challenge, Insertable<Challenge, "id" | "course_id" | "points" | "status" | "created_at">>;
       challenge_participants: Table<ChallengeParticipant, Insertable<ChallengeParticipant, "id" | "score" | "rank" | "joined_at">>;
@@ -160,6 +162,14 @@ export interface Database {
       is_admin: {
         Args: never;
         Returns: boolean;
+      };
+      review_task_submission: {
+        Args: { p_submission_id: string; p_status: SubmissionStatus; p_awarded_points: number; p_feedback: string };
+        Returns: Array<{ submission_id: string; submission_status: SubmissionStatus; awarded_points: number }>;
+      };
+      submit_task_work: {
+        Args: { p_task_id: string; p_submission_text: string; p_submission_url: string; p_submission_token: string };
+        Returns: Array<{ submission_id: string; submission_status: SubmissionStatus }>;
       };
       submit_quiz_attempt: {
         Args: { p_quiz_id: string; p_answers: Json; p_submission_token: string };

@@ -16,6 +16,7 @@
     "auth:validate": "node scripts/validate-auth-foundation.mjs",
     "courses:validate": "node scripts/validate-course-foundation.mjs",
     "quiz:validate": "node scripts/validate-quiz-foundation.mjs",
+    "tasks:validate": "node scripts/validate-task-foundation.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
