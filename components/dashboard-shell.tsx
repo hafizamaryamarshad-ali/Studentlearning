@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Award, BookOpen, ClipboardCheck, ClipboardList, CreditCard, GraduationCap, Home, ShieldCheck, Trophy, Users } from "lucide-react";
+import { Award, BookOpen, ClipboardCheck, ClipboardList, CreditCard, GraduationCap, Home, Users } from "lucide-react";
 import { ReactNode } from "react";
 import type { Profile } from "@/lib/supabase/types";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -12,11 +12,6 @@ export function DashboardShell({ title, eyebrow, children, profile, admin = fals
   admin?: boolean;
 }) {
   const initial = profile.full_name.trim().charAt(0).toUpperCase() || "S";
-  const adminPlaceholders = [
-    [Trophy, "Challenges"],
-    [ShieldCheck, "Withdrawals"],
-  ] as const;
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
       <header className="border-b border-slate-200 bg-white">
@@ -34,7 +29,7 @@ export function DashboardShell({ title, eyebrow, children, profile, admin = fals
           <nav className="mt-4 flex-1 space-y-1" aria-label={admin ? "Admin navigation" : "Student navigation"}>
             <Link href={admin ? "/admin" : "/student"} className="flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-3 text-sm font-bold text-blue-700"><Home className="h-5 w-5" />Dashboard</Link>
             {admin ? <Link href="/admin/tasks" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ClipboardList className="h-5 w-5" />Practical tasks</Link> : <Link href="/tasks" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ClipboardList className="h-5 w-5" />Practice</Link>}
-            {admin ? <><Link href="/admin/courses" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><BookOpen className="h-5 w-5" />Courses</Link><Link href="/admin/quizzes" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ClipboardCheck className="h-5 w-5" />Quizzes</Link><Link href="/admin/payments" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><CreditCard className="h-5 w-5" />Payments</Link><Link href="/admin/students" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><Users className="h-5 w-5" />Students</Link>{adminPlaceholders.map(([Icon, label]) => <span key={label} title="Coming later" className="flex cursor-not-allowed items-center justify-between rounded-xl px-3 py-3 text-sm font-bold text-slate-400"><span className="flex items-center gap-3"><Icon className="h-5 w-5" />{label}</span><small className="text-[10px] uppercase">Soon</small></span>)}</> : (
+            {admin ? <><Link href="/admin/courses" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><BookOpen className="h-5 w-5" />Courses</Link><Link href="/admin/quizzes" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ClipboardCheck className="h-5 w-5" />Quizzes</Link><Link href="/admin/payments" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><CreditCard className="h-5 w-5" />Payments</Link><Link href="/admin/students" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><Users className="h-5 w-5" />Students</Link></> : (
               <>
                 <Link href="/courses" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><BookOpen className="h-5 w-5" />Courses</Link>
                 <Link href="/quizzes" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ClipboardCheck className="h-5 w-5" />Quizzes</Link>

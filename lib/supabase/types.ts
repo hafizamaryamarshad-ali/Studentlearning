@@ -105,7 +105,7 @@ export interface WithdrawalRequest {
 export interface Certificate {
   id: Id; student_id: Id; course_id: Id; certificate_number: string; certificate_type: string;
   issued_at: Timestamp; verification_token: string; status: CertificateStatus; quiz_id: Id | null;
-  student_name: string | null; quiz_title: string | null; score: number | null;
+  task_id: Id | null; student_name: string | null; quiz_title: string | null; achievement_title: string | null; score: number | null;
   max_score: number | null; percentage: number | null;
 }
 export interface Notification {
@@ -194,7 +194,7 @@ export interface Database {
       };
       verify_certificate: {
         Args: { p_token: string };
-        Returns: Array<{ certificate_number: string; student_name: string; course_title: string; quiz_title: string; score: number; max_score: number; percentage: number; issued_at: string; certificate_status: CertificateStatus }>;
+        Returns: Array<{ certificate_number: string; student_name: string; course_title: string; achievement_type: string; achievement_title: string; score: number; max_score: number; percentage: number; issued_at: string; certificate_status: CertificateStatus }>;
       };
     };
     Enums: {

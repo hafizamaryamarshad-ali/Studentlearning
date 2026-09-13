@@ -4,8 +4,6 @@ import { ButtonLink } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { getCurrentAuth } from "@/lib/auth/session";
 
-const placeholderClass = "cursor-not-allowed text-slate-400";
-
 function MobileMenu({ links, signedIn = false }: { links: Array<{ href: string; label: string }>; signedIn?: boolean }) {
   return <details className="relative md:hidden">
     <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-extrabold text-slate-700 [&::-webkit-details-marker]:hidden"><Menu className="h-5 w-5" />Menu</summary>
@@ -44,12 +42,12 @@ export async function Navbar() {
               <Link className="hover:text-blue-600" href="/admin">Dashboard</Link>
               <Link className="hover:text-blue-600" href="/admin/courses">Courses</Link>
               <Link className="hover:text-blue-600" href="/admin/quizzes">Quizzes</Link>
+              <Link className="hover:text-blue-600" href="/admin/tasks">Tasks</Link>
               <Link className="hover:text-blue-600" href="/admin/payments">Payments</Link>
               <Link className="hover:text-blue-600" href="/admin/students">Students</Link>
-              {["Challenges", "Withdrawals"].map((item) => <span key={item} className={placeholderClass} title="Coming later">{item}</span>)}
             </div>
             <div className="hidden md:block"><LogoutButton compact /></div>
-            <MobileMenu signedIn links={[{ href: "/admin", label: "Dashboard" }, { href: "/admin/courses", label: "Courses" }, { href: "/admin/quizzes", label: "Quizzes" }, { href: "/admin/payments", label: "Payments" }, { href: "/admin/students", label: "Students" }]} />
+            <MobileMenu signedIn links={[{ href: "/admin", label: "Dashboard" }, { href: "/admin/courses", label: "Courses" }, { href: "/admin/quizzes", label: "Quizzes" }, { href: "/admin/tasks", label: "Tasks" }, { href: "/admin/payments", label: "Payments" }, { href: "/admin/students", label: "Students" }]} />
           </>
         ) : (
           <>
@@ -57,6 +55,7 @@ export async function Navbar() {
               <Link className="hover:text-blue-600" href="/student">Dashboard</Link>
               <Link className="hover:text-blue-600" href="/courses">Courses</Link>
               <Link className="hover:text-blue-600" href="/quizzes">Quizzes</Link>
+              <Link className="hover:text-blue-600" href="/tasks">Tasks</Link>
               <Link className="hover:text-blue-600" href="/certificates">Certificates</Link>
               <Link className="hover:text-blue-600" href="/profile">Profile</Link>
             </div>

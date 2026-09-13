@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(path, "utf8");
 const migration = read("supabase/migrations/202609130008_paid_learning_certificates.sql");
 const seed = read("supabase/migrations/202609130009_seed_learning_catalog.sql");
+const simpleFlow = read("supabase/migrations/202609130010_simple_learning_flow.sql");
 const paymentActions = read("app/purchases/actions.ts") + read("app/admin/payments/actions.ts");
 const certificatePages = read("app/certificates/[id]/page.tsx") + read("app/verify/[token]/page.tsx");
 
@@ -19,6 +20,10 @@ const checks = [
   ["certificate has QR", /QRCode\.toDataURL/, certificatePages],
   ["eight seeded courses", /Data Analysis Fundamentals/, seed],
   ["ten seeded quizzes", /40000000-0000-4000-8000-000000000010/, seed],
+  ["demo Easypaisa instructions", /Easypaisa \(Demo\)[\s\S]*0300-0000000/, simpleFlow],
+  ["eight practical tasks", /60000000-0000-4000-8000-000000000008/, simpleFlow],
+  ["course completion certificate", /function public\.issue_course_certificate/, simpleFlow],
+  ["approved task certificate", /function public\.issue_task_certificate/, simpleFlow],
 ];
 
 for (const [label, pattern, source] of checks) {
