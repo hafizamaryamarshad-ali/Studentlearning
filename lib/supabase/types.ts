@@ -164,6 +164,10 @@ export interface Database {
       };
     };
     Functions: {
+      claim_certificate: {
+        Args: { p_certificate_id: string; p_full_name: string; p_email: string | null };
+        Returns: string;
+      };
       get_quiz_questions: {
         Args: { p_quiz_id: string };
         Returns: Array<{ question_id: string; question: string; options: Json; points: number; sort_order: number }>;
@@ -171,6 +175,10 @@ export interface Database {
       is_admin: {
         Args: never;
         Returns: boolean;
+      };
+      open_learning_access: {
+        Args: never;
+        Returns: undefined;
       };
       review_course_payment: {
         Args: { p_payment_id: string; p_decision: "approve" | "reject"; p_admin_message: string };

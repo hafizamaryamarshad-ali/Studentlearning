@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { GraduationCap, Menu } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { getCurrentAuth } from "@/lib/auth/session";
 
@@ -15,7 +14,7 @@ function MobileMenu({ links, signedIn = false }: { links: Array<{ href: string; 
 }
 
 export async function Navbar() {
-  const { user, profile } = await getCurrentAuth();
+  const { profile } = await getCurrentAuth();
   const isAdmin = profile?.role === "admin";
 
   return (
@@ -26,15 +25,17 @@ export async function Navbar() {
           SkillSpring
         </Link>
 
-        {!user || !profile ? (
+        {!isAdmin ? (
           <>
             <div className="hidden items-center gap-7 text-sm font-bold text-slate-600 md:flex">
               <Link className="hover:text-blue-600" href="/">Home</Link>
               <Link className="hover:text-blue-600" href="/courses">Courses</Link>
-              <Link className="hover:text-blue-600" href="/login">Login</Link>
+              <Link className="hover:text-blue-600" href="/quizzes">Quizzes</Link>
+              <Link className="hover:text-blue-600" href="/tasks">Tasks</Link>
+              <Link className="hover:text-blue-600" href="/certificates">Certificates</Link>
+              <Link className="text-slate-400 hover:text-blue-600" href="/login">Admin</Link>
             </div>
-            <div className="hidden md:block"><ButtonLink href="/signup">Sign Up</ButtonLink></div>
-            <MobileMenu links={[{ href: "/", label: "Home" }, { href: "/courses", label: "Courses" }, { href: "/login", label: "Login" }, { href: "/signup", label: "Create account" }]} />
+            <MobileMenu links={[{ href: "/", label: "Home" }, { href: "/courses", label: "Courses" }, { href: "/quizzes", label: "Quizzes" }, { href: "/tasks", label: "Tasks" }, { href: "/certificates", label: "Certificates" }, { href: "/login", label: "Admin" }]} />
           </>
         ) : isAdmin ? (
           <>
@@ -49,20 +50,7 @@ export async function Navbar() {
             <div className="hidden md:block"><LogoutButton compact /></div>
             <MobileMenu signedIn links={[{ href: "/admin", label: "Dashboard" }, { href: "/admin/courses", label: "Courses" }, { href: "/admin/quizzes", label: "Quizzes" }, { href: "/admin/tasks", label: "Tasks" }, { href: "/admin/payments", label: "Payments" }, { href: "/admin/students", label: "Students" }]} />
           </>
-        ) : (
-          <>
-            <div className="hidden items-center gap-7 text-sm font-bold text-slate-600 md:flex">
-              <Link className="hover:text-blue-600" href="/student">Dashboard</Link>
-              <Link className="hover:text-blue-600" href="/courses">Courses</Link>
-              <Link className="hover:text-blue-600" href="/quizzes">Quizzes</Link>
-              <Link className="hover:text-blue-600" href="/tasks">Tasks</Link>
-              <Link className="hover:text-blue-600" href="/certificates">Certificates</Link>
-              <Link className="hover:text-blue-600" href="/profile">Profile</Link>
-            </div>
-            <div className="hidden md:block"><LogoutButton compact /></div>
-            <MobileMenu signedIn links={[{ href: "/student", label: "Dashboard" }, { href: "/courses", label: "Courses" }, { href: "/quizzes", label: "Quizzes" }, { href: "/student/purchases", label: "Purchases" }, { href: "/certificates", label: "Certificates" }, { href: "/profile", label: "Profile" }]} />
-          </>
-        )}
+        ) : null}
       </nav>
     </header>
   );

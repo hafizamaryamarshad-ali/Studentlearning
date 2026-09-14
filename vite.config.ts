@@ -39,8 +39,15 @@ const localBindingConfig = {
 export default defineConfig(async () => {
   if (process.env.VINEXT_DEPLOY_TARGET === "vercel" || process.env.VERCEL === "1") {
     const { nitro } = await import("nitro/vite");
+    const publicSupabaseEnv = Object.fromEntries(
+      ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]
+        .map((name) => [name, process.env[name]] as const)
+        .filter((entry): entry is readonly [string, string] => Boolean(entry[1]))
+        .map(([name, value]) => [`process.env.${name}`, JSON.stringify(value)]),
+    );
 
     return {
+      define: publicSupabaseEnv,
       resolve: {
         alias: {
           tailwindcss: fileURLToPath(

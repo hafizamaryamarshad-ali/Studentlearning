@@ -10,18 +10,18 @@ export default async function LoginPage({ searchParams }: {
   searchParams: Promise<{ next?: string; reason?: string }>;
 }) {
   const auth = await getCurrentAuth();
-  if (auth.user && auth.profile) redirect(auth.profile.role === "admin" ? "/admin" : "/student");
+  if (auth.profile?.role === "admin") redirect("/admin");
 
   const params = await searchParams;
   const notices: Record<string, string> = {
-    session: "Your session ended. Sign in again to continue.",
+    session: "Your admin session ended. Sign in again to continue.",
     configuration: "Authentication is ready in the code, but the Supabase project settings still need to be added.",
     callback: "We couldn’t confirm that email link. Please try signing in.",
   };
 
   return (
-    <AuthShell eyebrow="Welcome back" title="Login to keep learning" description="Continue your courses, progress, and achievements from one secure account.">
-      <LoginForm nextPath={safeNextPath(params.next)} notice={params.reason ? notices[params.reason] : undefined} />
+    <AuthShell eyebrow="Administrator access" title="Admin sign in" description="This private area is only for the authorized SkillSpring administrator.">
+      <LoginForm nextPath={safeNextPath(params.next, "/admin")} notice={params.reason ? notices[params.reason] : undefined} adminOnly />
     </AuthShell>
   );
 }

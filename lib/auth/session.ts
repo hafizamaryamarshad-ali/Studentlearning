@@ -51,9 +51,12 @@ async function requireProfile(returnTo: string) {
 }
 
 export async function requireStudent(returnTo = "/student") {
-  const auth = await requireProfile(returnTo);
+  const auth = await getCurrentAuth();
+  if (!auth.configured) redirect("/login?reason=configuration");
+  if (!auth.user) redirect(`/learn?next=${encodeURIComponent(returnTo)}`);
+  if (!auth.profile || auth.profileMissing) redirect("/auth/profile-missing");
   if (auth.profile.role !== "student") redirect("/admin");
-  return auth;
+  return { user: auth.user, profile: auth.profile };
 }
 
 export async function requireAdmin(returnTo = "/admin") {

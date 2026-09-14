@@ -28,3 +28,4 @@ a { text-decoration: none; }
 .icon-box { display: grid; height: 3rem; width: 3rem; place-items: center; border-radius: 1rem; }
 .icon-box.blue { background: #2563eb; }.icon-box.orange { background: #f59e0b; }.icon-box.green { background: #059669; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *,*::before,*::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@media print { body { background: white; } body * { visibility: hidden; } .certificate-print,.certificate-print * { visibility: visible; } .certificate-print { position: fixed; inset: 0; margin: 0; border-radius: 0; box-shadow: none; } }

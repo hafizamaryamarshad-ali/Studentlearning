@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getFriendlyAuthError, safeNextPath } from "@/lib/auth/messages";
 
-export function LoginForm({ nextPath = "/student", notice }: { nextPath?: string; notice?: string }) {
+export function LoginForm({ nextPath = "/admin", notice, adminOnly = false }: { nextPath?: string; notice?: string; adminOnly?: boolean }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +47,11 @@ export function LoginForm({ nextPath = "/student", notice }: { nextPath?: string
         : profile.role === "admin"
           ? "/admin"
           : safeNextPath(nextPath);
+      if (adminOnly && profile?.role !== "admin") {
+        await supabase.auth.signOut({ scope: "local" });
+        setError("This account does not have administrator access.");
+        return;
+      }
       router.replace(destination);
       router.refresh();
     } catch {
@@ -64,7 +68,6 @@ export function LoginForm({ nextPath = "/student", notice }: { nextPath?: string
       <div className="space-y-2"><Label htmlFor="email">Email address</Label><Input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-xl bg-white" placeholder="you@example.com" required /></div>
       <div className="space-y-2"><div className="flex items-center justify-between"><Label htmlFor="password">Password</Label><span className="text-xs font-semibold text-slate-400">Case-sensitive</span></div><Input id="password" name="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl bg-white" placeholder="Enter your password" required /></div>
       <Button type="submit" size="lg" className="h-12 w-full rounded-xl bg-blue-600 text-base font-extrabold hover:bg-blue-700" disabled={loading}>{loading && <LoaderCircle className="h-5 w-5 animate-spin" />}{loading ? "Signing in…" : "Login"}</Button>
-      <p className="text-center text-sm text-slate-600">New to SkillSpring? <Link href="/signup" className="font-extrabold text-blue-700 hover:underline">Create an account</Link></p>
     </form>
   );
 }

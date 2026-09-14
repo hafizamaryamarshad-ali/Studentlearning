@@ -1,4 +1,7 @@
 project_id = "StudentLearningPlatform"
 
+[auth]
+enable_anonymous_sign_ins = true
+
 [auth.email]
 enable_confirmations = false

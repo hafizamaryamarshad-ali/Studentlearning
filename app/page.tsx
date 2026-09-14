@@ -58,8 +58,8 @@ export default function Home() {
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {[["8","Lessons"],["3","Modules"],["68%","Progress"]].map(([value,label]) => <div key={label} className="rounded-2xl bg-slate-50 p-4 text-center"><p className="text-xl font-black text-slate-950">{value}</p><p className="mt-1 text-xs font-bold text-slate-500">{label}</p></div>)}
                 </div>
-                <Link href="/student" className="mt-5 flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50 p-4 font-bold text-blue-700 transition hover:bg-blue-100">
-                  Preview student dashboard <ArrowRight className="h-5 w-5" />
+                <Link href="/learn?next=/student" className="mt-5 flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50 p-4 font-bold text-blue-700 transition hover:bg-blue-100">
+                  Open learning dashboard <ArrowRight className="h-5 w-5" />
                 </Link>
               </div>
             </div>
