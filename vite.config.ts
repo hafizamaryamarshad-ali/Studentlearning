@@ -1,4 +1,5 @@
 import vinext from "vinext";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
@@ -36,6 +37,27 @@ const localBindingConfig = {
 };
 
 export default defineConfig(async () => {
+  if (process.env.VINEXT_DEPLOY_TARGET === "vercel" || process.env.VERCEL === "1") {
+    const { nitro } = await import("nitro/vite");
+
+    return {
+      resolve: {
+        alias: {
+          tailwindcss: fileURLToPath(
+            new URL("./node_modules/tailwindcss/index.css", import.meta.url),
+          ),
+          "tw-animate-css": fileURLToPath(
+            new URL(
+              "./node_modules/tw-animate-css/dist/tw-animate.css",
+              import.meta.url,
+            ),
+          ),
+        },
+      },
+      plugins: [vinext(), nitro()],
+    };
+  }
+
   // Use Miniflare's local Request.cf placeholder unless fetching is requested.
   process.env.CLOUDFLARE_CF_FETCH_ENABLED ??= "false";
   process.env.WRANGLER_SEND_METRICS ??= "false";
