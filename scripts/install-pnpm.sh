@@ -25,7 +25,7 @@ store_state=unavailable
 report_store() {
   node "${script_dir}/pnpm-install.mjs" --report-store "${cache_seed}" "${store_scope}" "${store_state}" "${prepare_only}"
 }
-# Publish preparation failures too; the optional report never decides success.
+# Publish preparation failures too; the optional report never decides successs.
 trap 'report_store || true' EXIT
 
 if [[ -n "${SITES_PNPM_BIN:-}" && -f "${SITES_PNPM_BIN}" && -r "${SITES_PNPM_BIN}" ]]; then
